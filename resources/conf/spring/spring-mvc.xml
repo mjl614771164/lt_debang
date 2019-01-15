@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+    http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+    http://www.springframework.org/schema/task
+	http://www.springframework.org/schema/task/spring-task-4.1.xsd">
+
+	<!-- 驱动注解 -->
+	<mvc:annotation-driven>
+		<mvc:message-converters>
+			<bean
+				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+				<property name="objectMapper">
+					<bean class="com.leting.util.JsonObjectMapper"></bean>
+				</property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+	<!-- 扫描定时器 -->
+	<task:annotation-driven />
+
+	<!-- 扫描 -->
+	<context:component-scan base-package="com.leting.*.controller" />
+
+	<!-- 配置默认mvc servlet -->
+	<mvc:default-servlet-handler />
+
+	<!-- 配置 viewResolver -->
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<!-- SpringMVC上传文件时，需要配置MultipartResolver处理器 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="UTF-8" />
+		<!-- 指定所上传文件的总大小不能超过200KB。注意maxUploadSize属性的限制不是针对单个文件，而是所有文件的容量之和 -->
+		<property name="maxUploadSize" value="-1" />
+	</bean>
+
+	<!--配置拦截器, 多个拦截器,顺序执行 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<!-- 匹配的是url路径， 如果不配置或/**,将拦截所有的Controller -->
+			<mvc:mapping path="/util/**" />
+			<mvc:mapping path="/user/**" />
+			<bean class="com.leting.common.interceptor.UserInterceptor">
+			</bean>
+		</mvc:interceptor>
+		<!-- 当设置多个拦截器时，先按顺序调用preHandle方法，然后逆序调用每个拦截器的postHandle和afterCompletion方法 -->
+	</mvc:interceptors>
+	
+	<mvc:view-controller path="/webapp/**" view-name="redirect:/"/>
+
+	<!-- 基于注释的事务，当注释中发现@Transactional时，使用id为“transactionManager”的事务管理器 -->
+	<!-- 如果没有设置transaction-manager的值，则spring以缺省默认的事务管理器来处理事务，默认事务管理器为第一个加载的事务管理器 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+</beans>
