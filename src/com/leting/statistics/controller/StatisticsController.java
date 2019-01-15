@@ -33,6 +33,7 @@ public class StatisticsController {
 
         System.out.println(" 大盘鸡 ");
         System.out.println("吃没了");
+        System.out.println("吃没了");
         System.out.println("1");
         System.out.println("2");
         System.out.println("3");
