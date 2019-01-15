@@ -32,6 +32,7 @@ public class StatisticsController {
         retMap = statisticsService.dataStatistics(request,response);
 
         System.out.println("大盘鸡");
+        System.out.println("大盘鸡");
         System.out.println("1");
         System.out.println("2");
         System.out.println("3");
